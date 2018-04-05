@@ -1,0 +1,17 @@
+{
+  "name": "@abcnews/poll-counters-client",
+  "version": "1.0.0",
+  "description": "Wrapper client for the poll-counters API",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo example.js --live --open"
+  },
+  "author": "Colin Gourlay <Gourlay.Colin@abc.net.au>",
+  "license": "ISC",
+  "dependencies": {
+    "xhr": "^2.4.1"
+  },
+  "devDependencies": {
+    "budo": "^11.2.0"
+  }
+}
