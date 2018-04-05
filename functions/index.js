@@ -1,3 +1,4 @@
+const cors = require('cors')({ origin: true });
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 
@@ -12,6 +13,8 @@ const REFERENCE_ERROR = `Reference does not exist`;
 // Return a group, question or answer
 
 exports.get = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {});
+
   const { group, question, answer } = req.query;
 
   if (!group || (answer && !question)) {
@@ -43,6 +46,8 @@ exports.get = functions.https.onRequest((req, res) => {
 // Increment an answer; return the parent question.
 
 exports.increment = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {});
+
   const { group = UNGROUPED_GROUP, question, answer } = req.query;
 
   if (!question || !answer) {
