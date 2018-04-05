@@ -1,6 +1,6 @@
 # poll-counters
 
-Manage our **firebase** `poll-counters` project, which stores counts for multiple-choice poll answers across many stories, allowing increments / totals via cloud functions.
+Manage our **firebase** `poll-counters` [project](https://console.firebase.google.com/project/poll-counters/overview), which stores counts for multiple-choice poll answers across many stories, allowing increments / totals via cloud functions.
 
 ## Getting started
 
