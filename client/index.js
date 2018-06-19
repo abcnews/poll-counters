@@ -1,46 +1,57 @@
-const xhr = require('xhr');
+var xhr = require('xhr');
 
-const URI_ROOT = `https://us-central1-poll-counters.cloudfunctions.net/`;
-const GROUP_ERROR = `A group name is required to create a Client`;
-const QUERY_ERROR = `Missing query parameter`;
+var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
+var GROUP_ERROR = 'A group name is required to create a Client';
+var QUERY_ERROR = 'Missing query parameter';
 
-const request = (path, cb) =>
+function request(path, cb) {
   xhr(
     {
       method: 'get',
-      uri: `${URI_ROOT}${path}`,
+      uri: URI_ROOT + path,
       json: true
     },
-    (err, resp, body) => cb(err, body)
+    function(err, resp, body) {
+      cb(err, body);
+    }
   );
-
-class Client {
-  constructor(group) {
-    if (!group) {
-      throw new Error(GROUP_ERROR);
-    }
-
-    this.group = group;
-  }
-
-  get({ question, answer } = {}, cb) {
-    if (typeof arguments[0] === 'function') {
-      cb = arguments[0];
-    }
-
-    request(
-      `get?group=${this.group}${question ? `&question=${question}${answer ? `&answer=${answer}` : ''}` : ''}`,
-      cb
-    );
-  }
-
-  increment({ question, answer } = {}, cb) {
-    if (!question || !answer) {
-      throw new Error(QUERY_ERROR);
-    }
-
-    request(`increment?group=${this.group}&question=${question}&answer=${answer}`, cb);
-  }
 }
+
+function Client(group) {
+  if (!(this instanceof Client)) {
+    return new Client(group);
+  }
+
+  if (!group) {
+    throw new Error(GROUP_ERROR);
+  }
+
+  this.group = group;
+}
+
+Client.prototype.get = function(query, cb) {
+  if (typeof query === 'function') {
+    cb = query;
+  }
+
+  if (typeof query !== 'object') {
+    query = {};
+  }
+
+  request(
+    'get?group=' +
+      this.group +
+      (query.question ? '&question=' + query.question + (query.answer ? '&answer=' + query.answer : '') : ''),
+    cb
+  );
+};
+
+Client.prototype.increment = function(query, cb) {
+  if (typeof query !== 'object' || !query.question || !query.answer) {
+    throw new Error(QUERY_ERROR);
+  }
+
+  request('increment?group=' + this.group + '&question=' + query.question + '&answer=' + query.answer, cb);
+};
 
 module.exports.Client = Client;
