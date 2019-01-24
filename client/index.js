@@ -1,8 +1,13 @@
 var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
 var GROUP_ERROR = 'A group name is required to create a Client';
 var QUERY_ERROR = 'Missing query parameter';
+var NOOP = function() {};
 
 function request(path, cb) {
+  if (!cb) {
+    cb = NOOP;
+  }
+
   var xhr = new XMLHttpRequest();
 
   xhr.onabort = cb;
