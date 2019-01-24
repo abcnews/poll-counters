@@ -1,5 +1,4 @@
-// var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
-var URI_ROOT = 'http://localhost:5000/poll-counters/us-central1/';
+var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
 var GROUP_ERROR = 'A group name is required to create a Client';
 var QUERY_ERROR = 'Missing query parameter';
 var NOOP = function() {};
