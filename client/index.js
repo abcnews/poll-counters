@@ -1,21 +1,31 @@
-var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
+// var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
+var URI_ROOT = 'http://localhost:5000/poll-counters/us-central1/';
 var GROUP_ERROR = 'A group name is required to create a Client';
 var QUERY_ERROR = 'Missing query parameter';
 var NOOP = function() {};
 
 function request(path, cb) {
-  if (!cb) {
-    cb = NOOP;
-  }
-
   var xhr = new XMLHttpRequest();
 
-  xhr.onabort = cb;
-  xhr.onerror = cb;
-  xhr.onload = function(event) {
-    cb(xhr.status !== 200 ? event : null, JSON.parse(xhr.responseText));
-  };
-  xhr.open('GET', URI_ROOT + path);
+  xhr.onabort = cb || NOOP;
+  xhr.onerror = cb || NOOP;
+  xhr.onload = cb
+    ? function(event) {
+        var response;
+
+        if (xhr.status !== 200) {
+          return cb(event);
+        }
+
+        try {
+          response = JSON.parse(xhr.responseText);
+        } catch (e) {}
+
+        cb(response ? response.error || null : xhr.responseText, response.error ? null : response);
+      }
+    : NOOP;
+  xhr.open('GET', URI_ROOT + path + (cb ? '' : '&quiet=1'));
+  xhr.responseType = 'text';
   xhr.send();
 }
 
