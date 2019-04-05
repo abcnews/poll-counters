@@ -30,7 +30,7 @@ const limiter = new RateLimit({
 exports.get = functions.https.onRequest((req, res) =>
   cors(req, res, () =>
     limiter(req, res, () => {
-      const { group, question, answer } = req.query;
+      const { group, question, answer } = req.method === 'POST' ? JSON.parse(req.body) : req.query;
 
       if (!group || (answer && !question)) {
         return res.json({ error: QUERY_ERROR });
@@ -63,7 +63,8 @@ exports.get = functions.https.onRequest((req, res) =>
 exports.increment = functions.https.onRequest((req, res) =>
   cors(req, res, () =>
     limiter(req, res, () => {
-      const { group = UNGROUPED_GROUP, question, answer, quiet = false } = req.query;
+      const { group = UNGROUPED_GROUP, question, answer, quiet = false } =
+        req.method === 'POST' ? JSON.parse(req.body) : req.query;
 
       if (!question || !answer) {
         return res.json({ error: QUERY_ERROR });
