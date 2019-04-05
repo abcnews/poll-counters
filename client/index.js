@@ -1,9 +1,30 @@
-var URI_ROOT = 'https://us-central1-poll-counters.cloudfunctions.net/';
+var URI_ROOT =
+  window.location.search.indexOf('prod') > -1
+    ? 'https://us-central1-poll-counters.cloudfunctions.net/'
+    : 'http://localhost:5000/poll-counters/us-central1/';
 var GROUP_ERROR = 'A group name is required to create a Client';
 var QUERY_ERROR = 'Missing query parameter';
 var NOOP = function() {};
 
-function request(path, cb) {
+function request(functionName, data, cb) {
+  if (!cb) {
+    data.quiet = 1;
+  }
+
+  if (data.quiet && 'sendBeacon' in navigator) {
+    return navigator.sendBeacon(URI_ROOT + functionName, JSON.stringify(data));
+  }
+
+  var query = Object.keys(data).reduce(function(memo, propName) {
+    var value = data[propName];
+
+    if (value == null) {
+      return memo;
+    }
+
+    return memo + (memo.length ? '&' : '?') + propName + '=' + value;
+  }, '');
+  var xhrURL = URI_ROOT + functionName + query;
   var xhr = new XMLHttpRequest();
 
   xhr.onabort = cb || NOOP;
@@ -23,7 +44,7 @@ function request(path, cb) {
         cb(response ? response.error || null : xhr.responseText, response.error ? null : response);
       }
     : NOOP;
-  xhr.open('GET', URI_ROOT + path + (cb ? '' : '&quiet=1'));
+  xhr.open('GET', xhrURL);
   xhr.responseType = 'text';
   xhr.send();
 }
@@ -50,9 +71,12 @@ Client.prototype.get = function(query, cb) {
   }
 
   request(
-    'get?group=' +
-      this.group +
-      (query.question ? '&question=' + query.question + (query.answer ? '&answer=' + query.answer : '') : ''),
+    'get',
+    {
+      group: this.group,
+      question: query.question,
+      answer: query.answer
+    },
     cb
   );
 };
@@ -62,7 +86,15 @@ Client.prototype.increment = function(query, cb) {
     throw new Error(QUERY_ERROR);
   }
 
-  request('increment?group=' + this.group + '&question=' + query.question + '&answer=' + query.answer, cb);
+  request(
+    'increment',
+    {
+      group: this.group,
+      question: query.question,
+      answer: query.answer
+    },
+    cb
+  );
 };
 
 module.exports.Client = Client;
