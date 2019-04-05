@@ -1,7 +1,7 @@
 var URI_ROOT =
-  window.location.search.indexOf('prod') > -1
-    ? 'https://us-central1-poll-counters.cloudfunctions.net/'
-    : 'http://localhost:5000/poll-counters/us-central1/';
+  window.location.search.indexOf('dev') > -1
+    ? 'http://localhost:5000/poll-counters/us-central1/'
+    : 'https://us-central1-poll-counters.cloudfunctions.net/';
 var GROUP_ERROR = 'A group name is required to create a Client';
 var QUERY_ERROR = 'Missing query parameter';
 var NOOP = function() {};
